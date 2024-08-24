@@ -77,23 +77,22 @@ clear
 
 logo "Installing needed packages.."
 
-dependencias=(alacritty base-devel bat brightnessctl bspwm dunst eza feh gvfs-mtp firefox geany git kitty imagemagick jq \
-			        jgmenu libwebp maim mpc mpd neovim ncmpcpp npm pamixer pacman-contrib \
-			        papirus-icon-theme physlock picom playerctl polybar polkit-gnome python-gobject ranger \
-			        redshift rofi rustup sxhkd tmux ttf-inconsolata ttf-jetbrains-mono ttf-jetbrains-mono-nerd \
-			        ttf-joypixels ttf-terminus-nerd ueberzug webp-pixbuf-loader xclip xdg-user-dirs \
-			        xdo xdotool xorg-xdpyinfo xorg-xkill xorg-xprop xorg-xrandr xorg-xsetroot \
-			        xorg-xwininfo zsh zsh-autosuggestions zsh-history-substring-search zsh-syntax-highlighting)
+dependencias=(alacritty base-devel bat brightnessctl bspwm dunst exa feh gvfs-mtp firefox geany git kitty ImageMagick jq \
+              jgmenu libwebp maim mpc mpd neovim ncmpcpp nodejs pamixer papirus-icon-theme physlock picom playerctl polybar \
+              polkit-gnome python3-gobject ranger redshift rofi rust sxhkd tmux font-inconsolata-otf font-jetbrains-mono \
+              font-awesome ttf-joypixels terminus-font ueberzug webp-pixbuf-loader xclip xdg-user-dirs xdo xdotool xdpyinfo \
+              xkill xprop xrandr xsetroot xwininfo zsh zsh-autosuggestions \
+              zsh-history-substring-search zsh-syntax-highlighting)
 
 is_installed() {
-    pacman -Q "$1" &> /dev/null
+    xbps-query -l | grep -q "^ii.*$1"
 }
 
 printf "%s%sChecking for required packages...%s\n" "${BLD}" "${CBL}" "${CNC}"
 for paquete in "${dependencias[@]}"; do
     if ! is_installed "$paquete"; then
-        if sudo pacman -S "$paquete" --noconfirm >/dev/null 2>> RiceError.log; then
-            printf "%s%s%s %shas been installed succesfully.%s\n" "${BLD}" "${CYE}" "$paquete" "${CBL}" "${CNC}"
+        if sudo xbps-install -Sy "$paquete" >/dev/null 2>> RiceError.log; then
+            printf "%s%s%s %shas been installed successfully.%s\n" "${BLD}" "${CYE}" "$paquete" "${CBL}" "${CNC}"
             sleep 1
         else
             printf "%s%s%s %shas not been installed correctly. See %sRiceError.log %sfor more details.%s\n" "${BLD}" "${CYE}" "$paquete" "${CRE}" "${CBL}" "${CRE}" "${CNC}"
@@ -106,6 +105,7 @@ for paquete in "${dependencias[@]}"; do
 done
 sleep 5
 clear
+
 
 ########## ---------- Preparing Folders ---------- ##########
 
@@ -279,22 +279,22 @@ fc-cache -rv >/dev/null 2>&1
 printf "\n\n%s%sFiles copied succesfully!!%s\n" "${BLD}" "${CGR}" "${CNC}"
 sleep 5
 
-########## ---------- Installing Paru & others ---------- ##########
+########## ---------- Installing VPSM & others ---------- ##########
 
-logo "installing Paru, Eww, tdrop & xqp"
+ogo "Installing vpsm, Eww, tdrop & xqp"
 
-# Installing Paru
-if command -v paru >/dev/null 2>&1; then
-    printf "%s%sParu is already installed%s\n" "${BLD}" "${CGR}" "${CNC}"
+# Installing vpsm
+if command -v vpsm >/dev/null 2>&1; then
+    printf "%s%svpsm is already installed%s\n" "${BLD}" "${CGR}" "${CNC}"
 else
-    printf "%s%sInstalling paru%s\n" "${BLD}" "${CBL}" "${CNC}"
+    printf "%s%sInstalling vpsm%s\n" "${BLD}" "${CBL}" "${CNC}"
     {
         cd "$HOME" || exit
-        git clone https://aur.archlinux.org/paru-bin.git
-        cd paru-bin || exit
-        makepkg -si --noconfirm
+        git clone https://github.com/void-linux/vpsm.git
+        cd vpsm || exit
+        sudo make install
         } || {
-        printf "\n%s%sFailed to install Paru. You may need to install it manually%s\n" "${BLD}" "${CRE}" "${CNC}"
+        printf "\n%s%sFailed to install vpsm. You may need to install it manually%s\n" "${BLD}" "${CRE}" "${CNC}"
     }
 fi
 
@@ -303,7 +303,7 @@ if command -v tdrop >/dev/null 2>&1; then
     printf "\n%s%sTdrop is already installed%s\n" "${BLD}" "${CGR}" "${CNC}"
 else
     printf "\n%s%sInstalling tdrop, this should be fast!%s\n" "${BLD}" "${CBL}" "${CNC}"
-    paru -S tdrop-git --skipreview --noconfirm
+    vpsm -xi tdrop
 fi
 
 # Installing xqp
@@ -311,31 +311,31 @@ if command -v xqp >/dev/null 2>&1; then
     printf "\n%s%sxqp is already installed%s\n" "${BLD}" "${CGR}" "${CNC}"
 else
     printf "\n%s%sInstalling xqp, this should be fast!%s\n" "${BLD}" "${CBL}" "${CNC}"
-    paru -S xqp --skipreview --noconfirm
+    vpsm -xi xqp
 fi
 
 # Installing rofi-greenclip
-if pacman -Q rofi-greenclip >/dev/null 2>&1; then
+if command -v greenclip >/dev/null 2>&1; then
     printf "\n%s%srofi-greenclip is already installed%s\n" "${BLD}" "${CGR}" "${CNC}"
 else
     printf "\n%s%sInstalling rofi-greenclip, this should be fast!%s\n" "${BLD}" "${CBL}" "${CNC}"
-    paru -S rofi-greenclip --skipreview --noconfirm
+    vpsm -xi rofi-greenclip
 fi
 
-# Installing ttf-maple
-if pacman -Q ttf-maple >/dev/null 2>&1; then
+# Installing ttf-maple (if available for Void Linux, otherwise skip or find an alternative)
+if is_installed ttf-maple; then
     printf "\n%s%sttf-maple is already installed%s\n" "${BLD}" "${CGR}" "${CNC}"
 else
     printf "\n%s%sInstalling ttf-maple, this should be fast!%s\n" "${BLD}" "${CBL}" "${CNC}"
-    paru -S ttf-maple --skipreview --noconfirm
+    vpsm -xi ttf-maple
 fi
 
 # Installing simple-mtpfs
-if pacman -Q simple-mtpfs >/dev/null 2>&1; then
+if command -v simple-mtpfs >/dev/null 2>&1; then
     printf "\n%s%ssimple-mtpfs is already installed%s\n" "${BLD}" "${CGR}" "${CNC}"
 else
     printf "\n%s%sInstalling simple-mtpfs, this should be fast!%s\n" "${BLD}" "${CBL}" "${CNC}"
-    paru -S simple-mtpfs --skipreview --noconfirm
+    vpsm -xi simple-mtpfs
 fi
 
 # Installing Eww
@@ -343,46 +343,38 @@ if command -v eww >/dev/null 2>&1; then
     printf "\n%s%sEww is already installed%s\n" "${BLD}" "${CGR}" "${CNC}"
 else
     printf "\n%s%sDownload and installing eww..%s\n" "${BLD}" "${CBL}" "${CNC}"
-    if curl -L https://github.com/gh0stzk/pkgs/raw/main/eww -o eww; then
-		echo "Download complete."
-		chmod +x eww
-		echo "Installing eww..."
-			if sudo install -Dm755 eww /usr/bin/eww; then
-				echo "Installation complete."
-				rm eww
-			else
-				echo "Error: Something happend."
-			fi
-	else
-		echo "Error: The file can't be downloaded.."
-	fi
+    vpsm -xi eww
 fi
+
 
 ########## ---------- Enabling MPD service ---------- ##########
 
 logo "Enabling mpd service"
 
-# Verifica si el servicio mpd está habilitado a nivel global (sistema)
-if systemctl is-enabled --quiet mpd.service; then
+# Check if the mpd service is enabled globally
+if [ -e /var/service/mpd ]; then
     printf "\n%s%sDisabling and stopping the global mpd service%s\n" "${BLD}" "${CBL}" "${CNC}"
-    sudo systemctl stop mpd.service
-    sudo systemctl disable mpd.service
+    sudo rm /var/service/mpd
+    sudo sv stop mpd
 fi
 
 printf "\n%s%sEnabling and starting the user-level mpd service%s\n" "${BLD}" "${CYE}" "${CNC}"
-systemctl --user enable --now mpd.service
+mkdir -p ~/.config/service
+ln -s /etc/sv/mpd ~/.config/service/
+sv start ~/.config/service/mpd
 
 printf "%s%sDone!!%s\n\n" "${BLD}" "${CGR}" "${CNC}"
 sleep 2
 
 ########## --------- Changing shell to zsh ---------- ##########
 
+
 logo "Changing default shell to zsh"
 
-if [[ $SHELL != "/usr/bin/zsh" ]]; then
+if [[ $SHELL != "/bin/zsh" ]]; then
     printf "\n%s%sChanging your shell to zsh. Your root password is needed.%s\n\n" "${BLD}" "${CYE}" "${CNC}"
-    # Cambia la shell a zsh
-    chsh -s /usr/bin/zsh
+    # Change the shell to zsh
+    chsh -s /bin/zsh
     printf "%s%sShell changed to zsh. Please reboot.%s\n\n" "${BLD}" "${CGR}" "${CNC}"
 else
     printf "%s%sYour shell is already zsh\nGood bye! installation finished, now reboot%s\n" "${BLD}" "${CGR}" "${CNC}"
