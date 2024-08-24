@@ -9,14 +9,26 @@
 #  └┐┌┘├─┤├┬┘└─┐
 #   └┘ ┴ ┴┴└─└─┘
 export VISUAL="${EDITOR}"
-export EDITOR='geany'
+export EDITOR='nvim'
 export BROWSER='firefox'
 export HISTORY_IGNORE="(ls|cd|pwd|exit|sudo reboot|history|cd -|cd ..)"
-export SUDO_PROMPT="Deploying root access for %u. Password pls: "
+export SUDO_PROMPT="And your papers, sir?: "
+export XBPS_DISTDIR=/home/null/.void-packages
+export XDG_RUNTIME_DIR="$HOME/.local/run/$(id -u)"
+
+export CLIPBOARD_NOAUDIO=1
+export CLIPBOARD_SILENT=1
+export CLIPBOARD_TMPDIR="$HOME/.clip/ramdisk/tmp"
+export CLIPBOARD_PERSISTDIR="$HOME/.clip/store"
+
+[[ ! -d $HOME/.clip/ramdisk/tmp ]]   &&  mkdir -p $HOME/.clip/ramdisk/tmp 
+[[ ! -d $HOME/.clip/ramdisk/store ]] &&  mkdir -p $HOME/.clip/ramdisk/store
 
 if [ -d "$HOME/.local/bin" ] ;
-  then PATH="$HOME/.local/bin:$PATH"
+  then PATH="$HOME/.local/bin:$HOME/.cargo/bin:$PATH"
 fi
+
+PATH="$PATH:/usr/local/bin"
 
 #  ┬  ┌─┐┌─┐┌┬┐  ┌─┐┌┐┌┌─┐┬┌┐┌┌─┐
 #  │  │ │├─┤ ││  ├┤ ││││ ┬││││├┤ 
@@ -44,6 +56,12 @@ zstyle ':completion:*' matcher-list \
 zstyle ':completion:*:warnings' format "%B%F{red}No matches for:%f %F{magenta}%d%b"
 zstyle ':completion:*:descriptions' format '%F{yellow}[-- %d --]%f'
 zstyle ':vcs_info:*' formats ' %B%s-[%F{magenta}%f %F{yellow}%b%f]-'
+
+# source ~/.config/zsh/source_completions.zsh
+# source_completion_scripts "${HOME}/.completions"
+
+# Defines various zsh functions, like enable() and disable() for sv
+source ~/.config/zsh/user_functions.zsh
 
 #  ┬ ┬┌─┐┬┌┬┐┬┌┐┌┌─┐  ┌┬┐┌─┐┌┬┐┌─┐
 #  │││├─┤│ │ │││││ ┬   │││ │ │ └─┐
@@ -92,8 +110,9 @@ function dir_icon {
   fi
 }
 
-PS1='%B%F{blue}%f%b  %B%F{magenta}%n%f%b $(dir_icon)  %B%F{red}%~%f%b${vcs_info_msg_0_} %(?.%B%F{green}.%F{red})%f%b '
+ PS1='%B%F{blue}%f%b  %B%F{magenta}%n%f%b $(dir_icon)  %B%F{red}%~%f%b${vcs_info_msg_0_} %(?.%B%F{green}.%F{red})%f%b '
 
+ PS4='%D{%s.%9.}+%N:%i>'
 # command not found
 command_not_found_handler() {
 	printf "%s%s? I don't know what is it\n" "$acc" "$0" >&2
@@ -132,20 +151,54 @@ fi
 #  ┌─┐┬  ┬┌─┐┌─┐
 #  ├─┤│  │├─┤└─┐
 #  ┴ ┴┴─┘┴┴ ┴└─┘
-alias mirrors="sudo reflector --verbose --latest 5 --country 'United States' --age 6 --sort rate --save /etc/pacman.d/mirrorlist"
 
 alias grub-update="sudo grub-mkconfig -o /boot/grub/grub.cfg"
-alias mantenimiento="yay -Sc && sudo pacman -Scc"
-alias purga="sudo pacman -Rns $(pacman -Qtdq) ; sudo fstrim -av"
-alias update="paru -Syu --nocombinedupgrade"
+alias update="sudo xbps-install -Syu"
 
 alias music="ncmpcpp"
 
-alias cat="bat --theme=base16"
-alias ls='eza --icons=always --color=always -a'
+alias cat="highlight --out-format=xterm256" #Color cat - print file with syntax highlighting.
+alias ls='eza --icons=always --color=always'
+alias la='eza --icons=always --color=always -a'
 alias ll='eza --icons=always --color=always -la'
+
+alias c='clear'
+
+alias rc='$EDITOR ~/.zshrc'
+alias so='source ~/.zshrc'
+
+alias progs="xbps-query -l"  # List programs I've installed
+alias orphans="xbps-query -O" # List orphan programs
+ 
+alias font-refresh="fc-cache -fv"
+alias search="xbps-query -Rs"
+alias pinfo="xbps-query -RS"
+alias dependency="xbps-query -Rx"
+alias install="sudo xbps-install"
+alias upgrade="sudo xbps-install -Suv"
+alias remove="sudo xbps-remove -R"
+alias autoremove="sudo xbps-remove -Oo"
+alias clean="sudo rm -rf /var/cache/xbps/*"
+
+
+alias xbps-checkvers="xbps-checkvers --distdir ~/.void-packages"
+
+alias vsv="sudo vsv"
+alias vpm="sudo vpm"
+alias ln="sudo ln"
+
+alias lsv='ls /etc/sv'
+alias lsva='ls /var/service'
+
+alias nf='neofetch'
+
+alias user_fn='nvim ~/.config/zsh/user_functions.zsh'
+
+set -o emacs #Allow nvim as $EDITOR while not making us use vi motions in terminal
+
 
 #  ┌─┐┬ ┬┌┬┐┌─┐  ┌─┐┌┬┐┌─┐┬─┐┌┬┐
 #  ├─┤│ │ │ │ │  └─┐ │ ├─┤├┬┘ │ 
 #  ┴ ┴└─┘ ┴ └─┘  └─┘ ┴ ┴ ┴┴└─ ┴ 
-$HOME/.local/bin/colorscript -r
+ $HOME/.local/bin/colorscript -r
+# ufetch

@@ -21,7 +21,7 @@ POWER_OFF=$(awk '/^grey =/ {print $3; exit}' "$FILE")
 
 # Check if Bluetooth interface exists and its status
 check_bluetooth() {
-	if systemctl is-active --quiet bluetooth.service; then
+    if [ $(/usr/bin/sv status bluetoothd | grep -q "^\s*run: bluetoothd") ]; then
 		if bluetoothctl show | grep -q "Powered: yes"; then
 			echo "%{F$POWER_ON}󰂯%{F-}" # Bluetooth is on
 		else

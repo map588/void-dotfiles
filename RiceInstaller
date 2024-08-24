@@ -314,21 +314,23 @@ else
     vpsm -xi xqp
 fi
 
-# Installing rofi-greenclip
-if command -v greenclip >/dev/null 2>&1; then
-    printf "\n%s%srofi-greenclip is already installed%s\n" "${BLD}" "${CGR}" "${CNC}"
+# Installing Clipboard 
+if command -v cb >/dev/null 2>&1; then
+    printf "\n%s%sClipoard is already installed%s\n" "${BLD}" "${CGR}" "${CNC}"
 else
-    printf "\n%s%sInstalling rofi-greenclip, this should be fast!%s\n" "${BLD}" "${CBL}" "${CNC}"
-    vpsm -xi rofi-greenclip
+    printf "\n%s%sInstalling Clipboard, this should be fast!%s\n" "${BLD}" "${CBL}" "${CNC}"
+    vpsm -xi Clipboard 
 fi
 
+## TODO: this font doesn't have a package, but it exists and is possible to install 
+
 # Installing ttf-maple (if available for Void Linux, otherwise skip or find an alternative)
-if is_installed ttf-maple; then
-    printf "\n%s%sttf-maple is already installed%s\n" "${BLD}" "${CGR}" "${CNC}"
-else
-    printf "\n%s%sInstalling ttf-maple, this should be fast!%s\n" "${BLD}" "${CBL}" "${CNC}"
-    vpsm -xi ttf-maple
-fi
+# if is_installed ttf-maple; then
+#     printf "\n%s%sttf-maple is already installed%s\n" "${BLD}" "${CGR}" "${CNC}"
+# else
+#     printf "\n%s%sInstalling ttf-maple, this should be fast!%s\n" "${BLD}" "${CBL}" "${CNC}"
+#     vpsm -xi ttf-maple
+# fi
 
 # Installing simple-mtpfs
 if command -v simple-mtpfs >/dev/null 2>&1; then
